@@ -398,11 +398,26 @@
     .row {
       width: 100%;
       min-height: 52px;
-      padding: 12px 16px;
+      padding: 0 6px 0 0;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .row-toggle {
+      flex: 1;
+      min-width: 0;
+      min-height: 52px;
+      padding: 12px 10px 12px 16px;
       display: flex;
       align-items: center;
       gap: 10px;
-      border-top: 1px solid var(--border);
+      text-align: left;
+    }
+
+    .row-toggle:active {
+      background: var(--surface-secondary);
     }
 
     .row:first-child {
@@ -903,6 +918,10 @@
               Add task
             </button>
           </div>
+          <button type="button" class="btn btn-ghost" id="clearReadyBtn">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><use href="#i-redo"></use></svg>
+            Clear ready status
+          </button>
         </div>
 
         <div class="sections">
@@ -1056,6 +1075,22 @@
     </div>
   </div>
 
+  <div class="backdrop" id="clearModal" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="clearModalTitle">
+      <div class="sheet-head">
+        <h2 id="clearModalTitle">Clear ready status</h2>
+        <button type="button" class="icon-btn" id="closeClearModal" aria-label="Close">
+          <svg class="icon" viewBox="0 0 24 24"><use href="#i-x"></use></svg>
+        </button>
+      </div>
+      <p class="sheet-copy">Mark every inventory item and task as not ready? Nothing will be deleted.</p>
+      <div class="actions-row">
+        <button type="button" class="btn btn-secondary" id="clearCancelBtn">Cancel</button>
+        <button type="button" class="btn btn-primary" id="clearConfirmBtn">Clear</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     (function () {
       "use strict";
@@ -1171,6 +1206,7 @@
       var taskModal = document.getElementById("taskModal");
       var deleteModal = document.getElementById("deleteModal");
       var deleteItemName = document.getElementById("deleteItemName");
+      var clearModal = document.getElementById("clearModal");
       var invForm = document.getElementById("invForm");
       var taskForm = document.getElementById("taskForm");
       var invName = document.getElementById("invName");
@@ -1258,11 +1294,14 @@
                 '<svg class="icon icon-sm" viewBox="0 0 24 24"><use href="#i-trash"></use></svg>' +
               "</button>"
             : "";
+          var action = ready ? "not ready" : "ready";
           return (
             '<div class="row">' +
-              '<span class="status-dot ' + (ready ? "ready" : "missing") + '" aria-hidden="true"></span>' +
-              '<span class="row-name">' + escapeHtml(label) + "</span>" +
-              '<span class="row-state">' + state + "</span>" +
+              '<button type="button" class="row-toggle" data-toggle-kind="' + kind + '" data-toggle-index="' + index + '" aria-pressed="' + (ready ? "true" : "false") + '" aria-label="Mark ' + escapeHtml(label) + ' ' + action + '">' +
+                '<span class="status-dot ' + (ready ? "ready" : "missing") + '" aria-hidden="true"></span>' +
+                '<span class="row-name">' + escapeHtml(label) + "</span>" +
+                '<span class="row-state">' + state + "</span>" +
+              "</button>" +
               deleteBtn +
             "</div>"
           );
@@ -1500,7 +1539,7 @@
       function closeModal(modal) {
         modal.classList.remove("is-open");
         modal.hidden = true;
-        if (!invModal.classList.contains("is-open") && !taskModal.classList.contains("is-open") && !deleteModal.classList.contains("is-open") && !checkScreen.classList.contains("is-active")) {
+        if (!invModal.classList.contains("is-open") && !taskModal.classList.contains("is-open") && !deleteModal.classList.contains("is-open") && !clearModal.classList.contains("is-open") && !checkScreen.classList.contains("is-active")) {
           lockBody(false);
         }
         if (lastFocus && typeof lastFocus.focus === "function") {
@@ -1522,6 +1561,40 @@
         saveState();
         renderDashboard();
         closeModal(deleteModal);
+      }
+
+      function setItemReady(kind, index, ready) {
+        if (kind === "inventory") {
+          if (!inventory[index]) return;
+          inventory[index].hasIt = ready;
+        } else if (kind === "task") {
+          if (!tasks[index]) return;
+          tasks[index].completed = ready;
+        } else {
+          return;
+        }
+        saveState();
+        renderDashboard();
+      }
+
+      function toggleItemReady(kind, index) {
+        if (kind === "inventory") {
+          if (!inventory[index]) return;
+          setItemReady(kind, index, !inventory[index].hasIt);
+          return;
+        }
+        if (kind === "task") {
+          if (!tasks[index]) return;
+          setItemReady(kind, index, !tasks[index].completed);
+        }
+      }
+
+      function clearAllReady() {
+        inventory.forEach(function (item) { item.hasIt = false; });
+        tasks.forEach(function (item) { item.completed = false; });
+        saveState();
+        renderDashboard();
+        closeModal(clearModal);
       }
 
       function resetInvForm() {
@@ -1611,10 +1684,36 @@
         if (event.target === taskModal) closeModal(taskModal);
       });
 
-      invList.addEventListener("click", function (event) {
-        var button = event.target.closest("[data-delete-index]");
-        if (!button) return;
-        confirmDeleteInventory(parseInt(button.getAttribute("data-delete-index"), 10));
+      document.querySelector(".sections").addEventListener("click", function (event) {
+        var deleteBtn = event.target.closest("[data-delete-index]");
+        if (deleteBtn) {
+          confirmDeleteInventory(parseInt(deleteBtn.getAttribute("data-delete-index"), 10));
+          return;
+        }
+        var toggleBtn = event.target.closest("[data-toggle-kind]");
+        if (!toggleBtn) return;
+        toggleItemReady(
+          toggleBtn.getAttribute("data-toggle-kind"),
+          parseInt(toggleBtn.getAttribute("data-toggle-index"), 10)
+        );
+      });
+
+      document.getElementById("clearReadyBtn").addEventListener("click", function () {
+        openModal(clearModal, document.getElementById("clearConfirmBtn"));
+      });
+
+      document.getElementById("closeClearModal").addEventListener("click", function () {
+        closeModal(clearModal);
+      });
+
+      document.getElementById("clearCancelBtn").addEventListener("click", function () {
+        closeModal(clearModal);
+      });
+
+      document.getElementById("clearConfirmBtn").addEventListener("click", clearAllReady);
+
+      clearModal.addEventListener("click", function (event) {
+        if (event.target === clearModal) closeModal(clearModal);
       });
 
       document.getElementById("closeDeleteModal").addEventListener("click", function () {
@@ -1677,11 +1776,12 @@
             pendingDeleteIndex = null;
             closeModal(deleteModal);
           }
+          else if (clearModal.classList.contains("is-open")) closeModal(clearModal);
           else if (checkScreen.classList.contains("is-active") || resultScreen.classList.contains("is-active")) {
             showDashboard();
           }
         }
-        if (checkScreen.classList.contains("is-active") && !invModal.classList.contains("is-open") && !taskModal.classList.contains("is-open") && !deleteModal.classList.contains("is-open")) {
+        if (checkScreen.classList.contains("is-active") && !invModal.classList.contains("is-open") && !taskModal.classList.contains("is-open") && !deleteModal.classList.contains("is-open") && !clearModal.classList.contains("is-open")) {
           if (event.key === "y" || event.key === "Y") selectAnswer(true);
           if (event.key === "n" || event.key === "N") selectAnswer(false);
         }
