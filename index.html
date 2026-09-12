@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f6f4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Readiness">
+  <meta name="description" content="Stand operations readiness checklist">
+  <title>Readiness | Stand Operations</title>
+  <style>
+    :root {
+      --background: #f6f6f4;
+      --surface: #ffffff;
+      --surface-secondary: #fafafa;
+      --text-primary: #111111;
+      --text-secondary: #6f6f6f;
+      --text-tertiary: #969696;
+      --border: #e5e5e2;
+      --border-strong: #d7d7d3;
+      --black: #111111;
+      --white: #ffffff;
+      --success-bg: #f3f6f4;
+      --warning-bg: #f7f4f1;
+      --track: #ecece8;
+      --accent-warn: #7a5344;
+      --radius: 12px;
+      --radius-sm: 10px;
+      --header-h: 58px;
+      --ease: ease;
+      --dur: 160ms;
+      --shadow: 0 1px 2px rgba(17, 17, 17, 0.04);
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      min-height: 100%;
+    }
+
+    html {
+      background: var(--background);
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--background);
+      color: var(--text-primary);
+      line-height: 1.45;
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
+
+    button, input {
+      font: inherit;
+      color: inherit;
+    }
+
+    button {
+      background: none;
+      border: 0;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    button:disabled {
+      cursor: default;
+      opacity: 0.45;
+    }
+
+    img, svg {
+      display: block;
+    }
+
+    :focus {
+      outline: none;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--black);
+      outline-offset: 2px;
+    }
+
+    .icon {
+      width: 20px;
+      height: 20px;
+      flex: 0 0 auto;
+      overflow: visible;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.75;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .backdrop[hidden],
+    .panel-body[hidden] {
+      display: none !important;
+    }
+
+    .icon-sm {
+      width: 18px;
+      height: 18px;
+    }
+
+    .icon-lg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .app {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .wrap {
+      width: min(480px, 100%);
+      margin: 0 auto;
+      padding-left: max(20px, var(--safe-left));
+      padding-right: max(20px, var(--safe-right));
+    }
+
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .app-header-inner {
+      width: min(480px, 100%);
+      margin: 0 auto;
+      min-height: calc(var(--header-h) + var(--safe-top));
+      padding: calc(10px + var(--safe-top)) max(20px, var(--safe-left)) 10px max(20px, var(--safe-right));
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      color: var(--text-primary);
+      background: var(--surface);
+    }
+
+    .brand-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .brand-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+      letter-spacing: 0;
+      line-height: 1.2;
+    }
+
+    main {
+      flex: 1;
+      padding-bottom: max(28px, calc(var(--safe-bottom) + 16px));
+    }
+
+    .hero {
+      padding-top: 28px;
+      padding-bottom: 22px;
+    }
+
+    .hero h1 {
+      font-size: clamp(30px, 8vw, 38px);
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      line-height: 1.12;
+    }
+
+    .hero p {
+      margin-top: 10px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      max-width: 34ch;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .overview {
+      padding: 22px 20px 18px;
+    }
+
+    .overview-pct {
+      font-size: clamp(48px, 14vw, 60px);
+      font-weight: 600;
+      letter-spacing: -0.045em;
+      line-height: 0.95;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .overview-label {
+      margin-top: 8px;
+      font-size: 15px;
+      color: var(--text-secondary);
+    }
+
+    .bar {
+      margin-top: 18px;
+      height: 4px;
+      background: var(--track);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0;
+      background: var(--black);
+      border-radius: inherit;
+      transition: width var(--dur) var(--ease);
+    }
+
+    .overview-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .stat-value {
+      margin-top: 4px;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .actions-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn {
+      min-height: 52px;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 16px;
+      font-weight: 560;
+      letter-spacing: -0.015em;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), transform 140ms var(--ease), opacity var(--dur) var(--ease);
+    }
+
+    .btn:active {
+      transform: scale(0.985);
+    }
+
+    .btn-primary {
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text-primary);
+      border: 1px solid var(--border-strong);
+      min-height: 48px;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      min-height: 48px;
+    }
+
+    .sections {
+      display: grid;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .panel {
+      overflow: hidden;
+    }
+
+    .panel-toggle {
+      width: 100%;
+      min-height: 64px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .panel-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      display: grid;
+      place-items: center;
+      color: var(--text-primary);
+      background: var(--surface-secondary);
+    }
+
+    .panel-copy {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .panel-count {
+      margin-top: 2px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .chevron {
+      color: var(--text-tertiary);
+      transition: transform var(--dur) var(--ease);
+    }
+
+    .panel.is-open .chevron {
+      transform: rotate(180deg);
+    }
+
+    .panel-body {
+      display: none;
+      border-top: 1px solid var(--border);
+    }
+
+    .panel.is-open .panel-body {
+      display: block;
+    }
+
+    .row {
+      width: 100%;
+      min-height: 52px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .row:first-child {
+      border-top: 0;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex: 0 0 auto;
+    }
+
+    .status-dot.ready {
+      background: #2a2a2a;
+    }
+
+    .status-dot.missing {
+      background: transparent;
+      border: 1.5px solid #b5b5b1;
+    }
+
+    .row-name {
+      flex: 1;
+      min-width: 0;
+      font-size: 15px;
+      letter-spacing: -0.01em;
+    }
+
+    .row-state {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .empty {
+      padding: 18px 16px 20px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      min-height: 100dvh;
+      background: var(--background);
+    }
+
+    .screen.is-active {
+      display: flex;
+    }
+
+    .screen-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .screen-header-inner {
+      width: min(480px, 100%);
+      margin: 0 auto;
+      min-height: calc(52px + var(--safe-top));
+      padding: calc(8px + var(--safe-top)) max(12px, var(--safe-left)) 8px max(12px, var(--safe-right));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      color: var(--text-primary);
+    }
+
+    .icon-btn:active {
+      background: var(--surface-secondary);
+    }
+
+    .screen-header-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .check-body,
+    .result-body {
+      width: min(480px, 100%);
+      margin: 0 auto;
+      padding: 24px max(20px, var(--safe-left)) max(28px, calc(var(--safe-bottom) + 16px)) max(20px, var(--safe-right));
+      flex: 1;
+    }
+
+    .check-kicker {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .check-title {
+      margin-top: 4px;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      line-height: 1.15;
+    }
+
+    .check-progress-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 22px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .question-card {
+      margin-top: 18px;
+      padding: 22px 20px 20px;
+    }
+
+    .question-card h2 {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.25;
+    }
+
+    .segment {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .segment button {
+      min-height: 52px;
+      font-size: 16px;
+      font-weight: 560;
+      color: var(--text-primary);
+      background: var(--surface);
+      transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+    }
+
+    .segment button + button {
+      border-left: 1px solid var(--border-strong);
+    }
+
+    .segment button.is-on {
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .check-error {
+      display: none;
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--accent-warn);
+    }
+
+    .check-error.is-visible {
+      display: block;
+    }
+
+    .check-nav {
+      margin-top: 14px;
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .text-btn {
+      min-height: 44px;
+      padding: 8px 2px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .result-card {
+      padding: 36px 22px 28px;
+      text-align: center;
+    }
+
+    .result-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border-strong);
+      display: grid;
+      place-items: center;
+      color: var(--text-primary);
+    }
+
+    .result-card.success {
+      background: var(--success-bg);
+    }
+
+    .result-card.incomplete {
+      background: var(--warning-bg);
+      text-align: left;
+    }
+
+    .result-card.incomplete .result-icon {
+      margin-left: 0;
+    }
+
+    .result-card h1 {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      line-height: 1.15;
+    }
+
+    .result-card > p {
+      margin-top: 10px;
+      font-size: 15px;
+      color: var(--text-secondary);
+    }
+
+    .gap-list {
+      margin-top: 28px;
+    }
+
+    .gap-list + .gap-list {
+      margin-top: 22px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .gap-kicker {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+    }
+
+    .gap-item {
+      margin-top: 10px;
+      font-size: 15px;
+      letter-spacing: -0.01em;
+    }
+
+    .result-actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      background: rgba(17, 17, 17, 0.32);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 12px 12px max(12px, var(--safe-bottom));
+    }
+
+    .backdrop.is-open {
+      display: flex;
+    }
+
+    .sheet {
+      width: min(480px, 100%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px 16px 14px 14px;
+      box-shadow: 0 8px 24px rgba(17, 17, 17, 0.08);
+      padding: 18px 18px 16px;
+      max-height: min(92dvh, 720px);
+      overflow: auto;
+    }
+
+    .sheet-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .sheet-head h2 {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .field label {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .field input {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 14px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      font-size: 16px;
+    }
+
+    .field input::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .sheet .segment {
+      margin-top: 0;
+    }
+
+    .sheet-error {
+      display: none;
+      margin: -6px 0 14px;
+      font-size: 13px;
+      color: var(--accent-warn);
+    }
+
+    .sheet-error.is-visible {
+      display: block;
+    }
+
+    body.is-locked {
+      overflow: hidden;
+    }
+
+    @media (min-width: 720px) {
+      .backdrop {
+        align-items: center;
+        padding: 24px;
+      }
+
+      .sheet {
+        border-radius: 14px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
+    <symbol id="i-clipboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect>
+      <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+      <path d="m9 14 2 2 4-4"></path>
+    </symbol>
+    <symbol id="i-package" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"></path>
+      <path d="M12 22V12"></path>
+      <path d="m3.3 7 8.7 5 8.7-5"></path>
+      <path d="m7.5 4.27 9 5.15"></path>
+    </symbol>
+    <symbol id="i-tasks" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m3 17 2 2 4-4"></path>
+      <path d="m3 7 2 2 4-4"></path>
+      <path d="M13 6h8"></path>
+      <path d="M13 12h8"></path>
+      <path d="M13 18h8"></path>
+    </symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14"></path>
+      <path d="M12 5v14"></path>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 6 9 17l-5-5"></path>
+    </symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 6 6 18"></path>
+      <path d="m6 6 12 12"></path>
+    </symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <path d="M12 8v4"></path>
+      <path d="M12 16h.01"></path>
+    </symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m6 9 6 6 6-6"></path>
+    </symbol>
+    <symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m15 18-6-6 6-6"></path>
+    </symbol>
+    <symbol id="i-redo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+      <path d="M3 3v5h5"></path>
+    </symbol>
+  </svg>
+
+  <div class="app" id="dashboard">
+    <header class="app-header">
+      <div class="app-header-inner">
+        <div class="brand-icon" aria-hidden="true">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><use href="#i-clipboard"></use></svg>
+        </div>
+        <div class="brand-copy">
+          <div class="brand-title">Readiness</div>
+          <div class="brand-sub">Stand Operations</div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="wrap hero">
+        <h1>Are we ready to open?</h1>
+        <p>Confirm inventory, equipment, and setup before leaving for the stand.</p>
+      </section>
+
+      <section class="wrap">
+        <div class="card overview">
+          <div class="overview-pct" id="readyPct">0%</div>
+          <div class="overview-label">Ready for today</div>
+          <div class="bar" aria-hidden="true">
+            <div class="bar-fill" id="readyBar"></div>
+          </div>
+          <div class="overview-stats">
+            <div>
+              <div class="stat-label">Inventory</div>
+              <div class="stat-value" id="invCount">0 / 0</div>
+            </div>
+            <div>
+              <div class="stat-label">Tasks</div>
+              <div class="stat-value" id="taskCount">0 / 0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="runCheckBtn">
+            <svg class="icon" viewBox="0 0 24 24"><use href="#i-clipboard"></use></svg>
+            Run readiness check
+          </button>
+          <div class="actions-row">
+            <button type="button" class="btn btn-secondary" id="addInvBtn">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><use href="#i-plus"></use></svg>
+              Add inventory
+            </button>
+            <button type="button" class="btn btn-secondary" id="addTaskBtn">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><use href="#i-plus"></use></svg>
+              Add task
+            </button>
+          </div>
+        </div>
+
+        <div class="sections">
+          <section class="card panel" id="invPanel">
+            <button type="button" class="panel-toggle" id="invToggle" aria-expanded="false" aria-controls="invList">
+              <span class="panel-icon" aria-hidden="true">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><use href="#i-package"></use></svg>
+              </span>
+              <span class="panel-copy">
+                <span class="panel-title">Inventory</span>
+                <span class="panel-count" id="invPanelCount">0 / 0</span>
+              </span>
+              <svg class="icon chevron" viewBox="0 0 24 24"><use href="#i-chevron"></use></svg>
+            </button>
+            <div class="panel-body" id="invList" hidden></div>
+          </section>
+
+          <section class="card panel" id="taskPanel">
+            <button type="button" class="panel-toggle" id="taskToggle" aria-expanded="false" aria-controls="taskList">
+              <span class="panel-icon" aria-hidden="true">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><use href="#i-tasks"></use></svg>
+              </span>
+              <span class="panel-copy">
+                <span class="panel-title">Readiness Tasks</span>
+                <span class="panel-count" id="taskPanelCount">0 / 0</span>
+              </span>
+              <svg class="icon chevron" viewBox="0 0 24 24"><use href="#i-chevron"></use></svg>
+            </button>
+            <div class="panel-body" id="taskList" hidden></div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <section class="screen" id="checkScreen" aria-label="Readiness check">
+    <header class="screen-header">
+      <div class="screen-header-inner">
+        <button type="button" class="icon-btn" id="closeCheckBtn" aria-label="Close checklist">
+          <svg class="icon" viewBox="0 0 24 24"><use href="#i-x"></use></svg>
+        </button>
+        <div class="screen-header-label" id="checkHeaderProgress">0 of 0 completed</div>
+        <span style="width:44px" aria-hidden="true"></span>
+      </div>
+    </header>
+    <div class="check-body">
+      <div class="check-kicker">Readiness Check</div>
+      <div class="check-title" id="checkSectionTitle">Inventory</div>
+      <div class="check-progress-meta">
+        <span id="checkSectionCount">1 of 0</span>
+        <span id="checkTotalCount">0 of 0 completed</span>
+      </div>
+      <div class="bar" aria-hidden="true">
+        <div class="bar-fill" id="checkBar"></div>
+      </div>
+      <div class="card question-card">
+        <h2 id="questionText">Do we have this item?</h2>
+        <div class="segment" role="group" aria-label="Yes or no">
+          <button type="button" id="answerYes">Yes</button>
+          <button type="button" id="answerNo">No</button>
+        </div>
+        <p class="check-error" id="checkError">Answer Yes or No before continuing.</p>
+      </div>
+      <div class="check-nav">
+        <button type="button" class="text-btn" id="prevQuestionBtn" hidden>
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><use href="#i-back"></use></svg>
+          Previous
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="resultScreen" aria-label="Readiness result">
+    <header class="screen-header">
+      <div class="screen-header-inner">
+        <button type="button" class="icon-btn" id="closeResultBtn" aria-label="Back to dashboard">
+          <svg class="icon" viewBox="0 0 24 24"><use href="#i-x"></use></svg>
+        </button>
+        <div class="screen-header-label">Result</div>
+        <span style="width:44px" aria-hidden="true"></span>
+      </div>
+    </header>
+    <div class="result-body" id="resultBody"></div>
+  </section>
+
+  <div class="backdrop" id="invModal" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="invModalTitle">
+      <div class="sheet-head">
+        <h2 id="invModalTitle">Add inventory</h2>
+        <button type="button" class="icon-btn" id="closeInvModal" aria-label="Close">
+          <svg class="icon" viewBox="0 0 24 24"><use href="#i-x"></use></svg>
+        </button>
+      </div>
+      <form id="invForm">
+        <div class="field">
+          <label for="invName">Item name</label>
+          <input id="invName" name="name" type="text" maxlength="80" autocomplete="off" enterkeyhint="done" placeholder="32oz deli cups">
+        </div>
+        <div class="field">
+          <label>Do you currently have it?</label>
+          <div class="segment" role="group" aria-label="Do you currently have it?">
+            <button type="button" data-field="invHas" data-value="yes">Yes</button>
+            <button type="button" data-field="invHas" data-value="no">No</button>
+          </div>
+        </div>
+        <p class="sheet-error" id="invError">Enter an item name and choose Yes or No.</p>
+        <button type="submit" class="btn btn-primary" style="width:100%">Add item</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="backdrop" id="taskModal" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="taskModalTitle">
+      <div class="sheet-head">
+        <h2 id="taskModalTitle">Add task</h2>
+        <button type="button" class="icon-btn" id="closeTaskModal" aria-label="Close">
+          <svg class="icon" viewBox="0 0 24 24"><use href="#i-x"></use></svg>
+        </button>
+      </div>
+      <form id="taskForm">
+        <div class="field">
+          <label for="taskName">Task or question</label>
+          <input id="taskName" name="question" type="text" maxlength="120" autocomplete="off" enterkeyhint="done" placeholder="Is the canopy set up?">
+        </div>
+        <div class="field">
+          <label>Is it already complete?</label>
+          <div class="segment" role="group" aria-label="Is it already complete?">
+            <button type="button" data-field="taskDone" data-value="yes">Yes</button>
+            <button type="button" data-field="taskDone" data-value="no">No</button>
+          </div>
+        </div>
+        <p class="sheet-error" id="taskError">Enter a task and choose Yes or No.</p>
+        <button type="submit" class="btn btn-primary" style="width:100%">Add task</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var STORAGE_KEY = "readiness.standOperations.v1";
+
+      var DEFAULT_INVENTORY = [
+        ["32oz deli cups", true],
+        ["16oz guest cups", true],
+        ["Cup lids", true],
+        ["Straws", true],
+        ["Napkins", true],
+        ["Sample cups", false],
+        ["Ice", false],
+        ["Water jugs", true],
+        ["Lemons", true],
+        ["Cane sugar", true],
+        ["Simple syrup", true],
+        ["Strawberry puree", true],
+        ["Mango puree", false],
+        ["Lavender syrup", true],
+        ["Honey", false],
+        ["Sparkling water", false],
+        ["Lemon wheels", false],
+        ["Fresh mint", false],
+        ["Edible flowers", false],
+        ["Sugar for rims", true],
+        ["Flavor labels", true],
+        ["Pitchers", false],
+        ["Drink dispensers", true],
+        ["Cooler", true],
+        ["Citrus juicer", true],
+        ["Cutting board", true],
+        ["Knife", true],
+        ["Funnels", false],
+        ["Measuring cups", true],
+        ["Mixing spoon", true],
+        ["Ice scoop", true],
+        ["Tongs", true],
+        ["Garnish cups", true],
+        ["Folding table", true],
+        ["Tablecloth", false],
+        ["Canopy", true],
+        ["Canopy weights", true],
+        ["Menu sign", true],
+        ["Cash box", true],
+        ["Card reader", true],
+        ["Phone battery pack", true],
+        ["Trash bags", true],
+        ["Hand sanitizer", false],
+        ["Food-safe gloves", true],
+        ["Paper towels", true],
+        ["Sanitizing wipes", true],
+        ["First aid kit", false],
+        ["Extension cord", false],
+        ["Stir spoons", true]
+      ].map(function (item) {
+        return { name: item[0], hasIt: item[1] };
+      });
+
+      var DEFAULT_TASKS = [
+        ["Is the canopy set up?", false],
+        ["Is the cooler filled with ice?", false],
+        ["Are the dispensers clean and filled?", false],
+        ["Is the menu sign visible?", true],
+        ["Is the card reader charged and paired?", true],
+        ["Is the cash box stocked with change?", true],
+        ["Are the tables wiped and set?", false],
+        ["Is the garnish station prepped?", false],
+        ["Are trash bags in place?", true],
+        ["Are permits and licenses packed?", false]
+      ].map(function (item) {
+        return { question: item[0], completed: item[1] };
+      });
+
+      var inventory = [];
+      var tasks = [];
+      var checkEntries = [];
+      var checkAnswers = [];
+      var checkIndex = 0;
+      var advancing = false;
+      var advanceTimer = null;
+      var invHas = null;
+      var taskDone = null;
+      var lastFocus = null;
+
+      var dashboard = document.getElementById("dashboard");
+      var checkScreen = document.getElementById("checkScreen");
+      var resultScreen = document.getElementById("resultScreen");
+      var readyPct = document.getElementById("readyPct");
+      var readyBar = document.getElementById("readyBar");
+      var invCount = document.getElementById("invCount");
+      var taskCount = document.getElementById("taskCount");
+      var invPanel = document.getElementById("invPanel");
+      var taskPanel = document.getElementById("taskPanel");
+      var invList = document.getElementById("invList");
+      var taskList = document.getElementById("taskList");
+      var invPanelCount = document.getElementById("invPanelCount");
+      var taskPanelCount = document.getElementById("taskPanelCount");
+      var questionText = document.getElementById("questionText");
+      var checkSectionTitle = document.getElementById("checkSectionTitle");
+      var checkSectionCount = document.getElementById("checkSectionCount");
+      var checkTotalCount = document.getElementById("checkTotalCount");
+      var checkHeaderProgress = document.getElementById("checkHeaderProgress");
+      var checkBar = document.getElementById("checkBar");
+      var checkError = document.getElementById("checkError");
+      var answerYes = document.getElementById("answerYes");
+      var answerNo = document.getElementById("answerNo");
+      var prevQuestionBtn = document.getElementById("prevQuestionBtn");
+      var resultBody = document.getElementById("resultBody");
+      var invModal = document.getElementById("invModal");
+      var taskModal = document.getElementById("taskModal");
+      var invForm = document.getElementById("invForm");
+      var taskForm = document.getElementById("taskForm");
+      var invName = document.getElementById("invName");
+      var taskName = document.getElementById("taskName");
+      var invError = document.getElementById("invError");
+      var taskError = document.getElementById("taskError");
+
+      function clone(value) {
+        return JSON.parse(JSON.stringify(value));
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function isInventoryItem(item) {
+        return item && typeof item.name === "string" && typeof item.hasIt === "boolean";
+      }
+
+      function isTask(item) {
+        return item && typeof item.question === "string" && typeof item.completed === "boolean";
+      }
+
+      function loadState() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) {
+            inventory = clone(DEFAULT_INVENTORY);
+            tasks = clone(DEFAULT_TASKS);
+            return;
+          }
+          var parsed = JSON.parse(raw);
+          var savedInv = parsed && Array.isArray(parsed.inventory) ? parsed.inventory.filter(isInventoryItem) : [];
+          var savedTasks = parsed && Array.isArray(parsed.tasks) ? parsed.tasks.filter(isTask) : [];
+          inventory = savedInv.length ? savedInv : clone(DEFAULT_INVENTORY);
+          tasks = savedTasks.length ? savedTasks : clone(DEFAULT_TASKS);
+        } catch (err) {
+          inventory = clone(DEFAULT_INVENTORY);
+          tasks = clone(DEFAULT_TASKS);
+        }
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            inventory: inventory,
+            tasks: tasks
+          }));
+        } catch (err) {
+          /* Storage can be unavailable in private mode; keep working in memory. */
+        }
+      }
+
+      function stats() {
+        var invReady = inventory.filter(function (item) { return item.hasIt; }).length;
+        var taskReady = tasks.filter(function (item) { return item.completed; }).length;
+        var total = inventory.length + tasks.length;
+        var ready = invReady + taskReady;
+        var pct = total ? Math.round((ready / total) * 100) : 0;
+        return {
+          invReady: invReady,
+          invTotal: inventory.length,
+          taskReady: taskReady,
+          taskTotal: tasks.length,
+          ready: ready,
+          total: total,
+          pct: pct
+        };
+      }
+
+      function renderRows(items, kind) {
+        if (!items.length) {
+          return '<div class="empty">Nothing added yet.</div>';
+        }
+        return items.map(function (item) {
+          var ready = kind === "inventory" ? item.hasIt : item.completed;
+          var label = kind === "inventory" ? item.name : item.question;
+          var state = kind === "inventory" ? (ready ? "Ready" : "Missing") : (ready ? "Complete" : "Incomplete");
+          return (
+            '<div class="row">' +
+              '<span class="status-dot ' + (ready ? "ready" : "missing") + '" aria-hidden="true"></span>' +
+              '<span class="row-name">' + escapeHtml(label) + "</span>" +
+              '<span class="row-state">' + state + "</span>" +
+            "</div>"
+          );
+        }).join("");
+      }
+
+      function renderDashboard() {
+        var s = stats();
+        readyPct.textContent = s.pct + "%";
+        readyBar.style.width = s.pct + "%";
+        invCount.textContent = s.invReady + " / " + s.invTotal;
+        taskCount.textContent = s.taskReady + " / " + s.taskTotal;
+        invPanelCount.textContent = s.invReady + " / " + s.invTotal;
+        taskPanelCount.textContent = s.taskReady + " / " + s.taskTotal;
+        invList.innerHTML = renderRows(inventory, "inventory");
+        taskList.innerHTML = renderRows(tasks, "task");
+      }
+
+      function setPanel(panel, body, toggle, open) {
+        panel.classList.toggle("is-open", open);
+        body.hidden = !open;
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      }
+
+      function lockBody(lock) {
+        document.body.classList.toggle("is-locked", lock);
+      }
+
+      function showDashboard() {
+        if (advanceTimer) window.clearTimeout(advanceTimer);
+        advancing = false;
+        advanceTimer = null;
+        dashboard.style.display = "";
+        checkScreen.classList.remove("is-active");
+        resultScreen.classList.remove("is-active");
+        lockBody(false);
+        renderDashboard();
+      }
+
+      function buildEntries() {
+        var entries = inventory.map(function (item, index) {
+          return {
+            kind: "inventory",
+            index: index,
+            prompt: "Do we have " + item.name + "?"
+          };
+        });
+        tasks.forEach(function (item, index) {
+          entries.push({
+            kind: "task",
+            index: index,
+            prompt: item.question
+          });
+        });
+        return entries;
+      }
+
+      function answeredCount() {
+        return checkAnswers.filter(function (value) {
+          return value === true || value === false;
+        }).length;
+      }
+
+      function allAnswered() {
+        return checkEntries.length > 0 && checkAnswers.length === checkEntries.length &&
+          checkAnswers.every(function (value) {
+            return value === true || value === false;
+          });
+      }
+
+      function updateCheckProgress() {
+        var done = answeredCount();
+        var total = checkEntries.length;
+        var label = done + " of " + total + " completed";
+        checkHeaderProgress.textContent = label;
+        checkTotalCount.textContent = label;
+        checkBar.style.width = (total ? Math.round((done / total) * 100) : 0) + "%";
+      }
+
+      function renderQuestion() {
+        var entry = checkEntries[checkIndex];
+        if (!entry) return;
+
+        var sectionItems = entry.kind === "inventory" ? inventory : tasks;
+        var sectionIndex = entry.kind === "inventory"
+          ? checkIndex + 1
+          : checkIndex - inventory.length + 1;
+
+        checkSectionTitle.textContent = entry.kind === "inventory" ? "Inventory" : "Readiness Tasks";
+        checkSectionCount.textContent = sectionIndex + " of " + sectionItems.length;
+        questionText.textContent = entry.prompt;
+
+        var current = checkAnswers[checkIndex];
+        answerYes.classList.toggle("is-on", current === true);
+        answerNo.classList.toggle("is-on", current === false);
+        answerYes.setAttribute("aria-pressed", current === true ? "true" : "false");
+        answerNo.setAttribute("aria-pressed", current === false ? "true" : "false");
+        prevQuestionBtn.hidden = checkIndex === 0;
+        checkError.classList.remove("is-visible");
+        updateCheckProgress();
+      }
+
+      function startChecklist() {
+        checkEntries = buildEntries();
+        if (!checkEntries.length) return;
+        checkAnswers = checkEntries.map(function () { return null; });
+        checkIndex = 0;
+        advancing = false;
+        dashboard.style.display = "none";
+        resultScreen.classList.remove("is-active");
+        checkScreen.classList.add("is-active");
+        window.scrollTo(0, 0);
+        renderQuestion();
+      }
+
+      function applyAnswers() {
+        checkEntries.forEach(function (entry, index) {
+          var value = checkAnswers[index];
+          if (entry.kind === "inventory") {
+            inventory[entry.index].hasIt = value;
+          } else {
+            tasks[entry.index].completed = value;
+          }
+        });
+        saveState();
+      }
+
+      function finishChecklist() {
+        if (!allAnswered()) {
+          checkError.classList.add("is-visible");
+          return;
+        }
+        applyAnswers();
+        showResults();
+      }
+
+      function selectAnswer(value) {
+        if (!checkEntries[checkIndex]) return;
+        checkAnswers[checkIndex] = value;
+        renderQuestion();
+        updateCheckProgress();
+
+        if (checkIndex === checkEntries.length - 1) {
+          finishChecklist();
+          return;
+        }
+
+        if (advanceTimer) window.clearTimeout(advanceTimer);
+        advancing = true;
+        advanceTimer = window.setTimeout(function () {
+          advancing = false;
+          advanceTimer = null;
+          if (checkIndex < checkEntries.length - 1 && checkAnswers[checkIndex] !== null) {
+            checkIndex += 1;
+            renderQuestion();
+          }
+        }, 170);
+      }
+
+      function missingInventory() {
+        return inventory.filter(function (item) { return !item.hasIt; });
+      }
+
+      function incompleteTasks() {
+        return tasks.filter(function (item) { return !item.completed; });
+      }
+
+      function showResults() {
+        var missing = missingInventory();
+        var openTasks = incompleteTasks();
+        var ready = missing.length === 0 && openTasks.length === 0;
+        var html = "";
+
+        if (ready) {
+          html =
+            '<div class="card result-card success">' +
+              '<div class="result-icon" aria-hidden="true"><svg class="icon icon-lg" viewBox="0 0 24 24"><use href="#i-check"></use></svg></div>' +
+              "<h1>We are READY to sell!</h1>" +
+              "<p>Everything required for today has been confirmed.</p>" +
+              '<div class="result-actions">' +
+                '<button type="button" class="btn btn-primary" id="doneBtn">Back to dashboard</button>' +
+              "</div>" +
+            "</div>";
+        } else {
+          html =
+            '<div class="card result-card incomplete">' +
+              '<div class="result-icon" aria-hidden="true"><svg class="icon icon-lg" viewBox="0 0 24 24"><use href="#i-alert"></use></svg></div>' +
+              "<h1>Not ready yet</h1>" +
+              "<p>A few items still need attention before opening.</p>";
+
+          if (missing.length) {
+            html += '<div class="gap-list"><div class="gap-kicker">Missing inventory</div>';
+            missing.forEach(function (item) {
+              html += '<div class="gap-item">' + escapeHtml(item.name) + "</div>";
+            });
+            html += "</div>";
+          }
+
+          if (openTasks.length) {
+            html += '<div class="gap-list"><div class="gap-kicker">Incomplete tasks</div>';
+            openTasks.forEach(function (item) {
+              html += '<div class="gap-item">' + escapeHtml(item.question) + "</div>";
+            });
+            html += "</div>";
+          }
+
+          html +=
+              '<div class="result-actions">' +
+                '<button type="button" class="btn btn-primary" id="reviewBtn">' +
+                  '<svg class="icon" viewBox="0 0 24 24"><use href="#i-redo"></use></svg>' +
+                  "Review checklist" +
+                "</button>" +
+                '<button type="button" class="btn btn-ghost" id="doneBtn">Back to dashboard</button>' +
+              "</div>" +
+            "</div>";
+        }
+
+        resultBody.innerHTML = html;
+        checkScreen.classList.remove("is-active");
+        dashboard.style.display = "none";
+        resultScreen.classList.add("is-active");
+        window.scrollTo(0, 0);
+      }
+
+      function openModal(modal, input) {
+        lastFocus = document.activeElement;
+        modal.hidden = false;
+        modal.classList.add("is-open");
+        lockBody(true);
+        window.setTimeout(function () {
+          if (input) input.focus();
+        }, 30);
+      }
+
+      function closeModal(modal) {
+        modal.classList.remove("is-open");
+        modal.hidden = true;
+        if (!invModal.classList.contains("is-open") && !taskModal.classList.contains("is-open") && !checkScreen.classList.contains("is-active")) {
+          lockBody(false);
+        }
+        if (lastFocus && typeof lastFocus.focus === "function") {
+          lastFocus.focus();
+        }
+      }
+
+      function resetInvForm() {
+        invForm.reset();
+        invHas = null;
+        invError.classList.remove("is-visible");
+        Array.prototype.forEach.call(document.querySelectorAll('[data-field="invHas"]'), function (btn) {
+          btn.classList.remove("is-on");
+          btn.setAttribute("aria-pressed", "false");
+        });
+      }
+
+      function resetTaskForm() {
+        taskForm.reset();
+        taskDone = null;
+        taskError.classList.remove("is-visible");
+        Array.prototype.forEach.call(document.querySelectorAll('[data-field="taskDone"]'), function (btn) {
+          btn.classList.remove("is-on");
+          btn.setAttribute("aria-pressed", "false");
+        });
+      }
+
+      function setSegment(field, value) {
+        Array.prototype.forEach.call(document.querySelectorAll('[data-field="' + field + '"]'), function (btn) {
+          var on = btn.getAttribute("data-value") === value;
+          btn.classList.toggle("is-on", on);
+          btn.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+        if (field === "invHas") invHas = value === "yes";
+        if (field === "taskDone") taskDone = value === "yes";
+      }
+
+      document.getElementById("runCheckBtn").addEventListener("click", startChecklist);
+      document.getElementById("closeCheckBtn").addEventListener("click", showDashboard);
+      document.getElementById("closeResultBtn").addEventListener("click", showDashboard);
+
+      document.getElementById("invToggle").addEventListener("click", function () {
+        setPanel(invPanel, invList, this, !invPanel.classList.contains("is-open"));
+      });
+
+      document.getElementById("taskToggle").addEventListener("click", function () {
+        setPanel(taskPanel, taskList, this, !taskPanel.classList.contains("is-open"));
+      });
+
+      answerYes.addEventListener("click", function () { selectAnswer(true); });
+      answerNo.addEventListener("click", function () { selectAnswer(false); });
+
+      prevQuestionBtn.addEventListener("click", function () {
+        if (checkIndex === 0) return;
+        if (advanceTimer) window.clearTimeout(advanceTimer);
+        advancing = false;
+        advanceTimer = null;
+        checkIndex -= 1;
+        renderQuestion();
+      });
+
+      resultBody.addEventListener("click", function (event) {
+        var target = event.target.closest("button");
+        if (!target) return;
+        if (target.id === "doneBtn") showDashboard();
+        if (target.id === "reviewBtn") startChecklist();
+      });
+
+      document.getElementById("addInvBtn").addEventListener("click", function () {
+        resetInvForm();
+        openModal(invModal, invName);
+      });
+
+      document.getElementById("addTaskBtn").addEventListener("click", function () {
+        resetTaskForm();
+        openModal(taskModal, taskName);
+      });
+
+      document.getElementById("closeInvModal").addEventListener("click", function () {
+        closeModal(invModal);
+      });
+
+      document.getElementById("closeTaskModal").addEventListener("click", function () {
+        closeModal(taskModal);
+      });
+
+      invModal.addEventListener("click", function (event) {
+        if (event.target === invModal) closeModal(invModal);
+      });
+
+      taskModal.addEventListener("click", function (event) {
+        if (event.target === taskModal) closeModal(taskModal);
+      });
+
+      document.addEventListener("click", function (event) {
+        var button = event.target.closest("[data-field]");
+        if (!button) return;
+        setSegment(button.getAttribute("data-field"), button.getAttribute("data-value"));
+      });
+
+      invForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        var name = invName.value.replace(/\s+/g, " ").trim();
+        if (!name || invHas === null) {
+          invError.classList.add("is-visible");
+          return;
+        }
+        inventory.push({ name: name, hasIt: invHas });
+        saveState();
+        renderDashboard();
+        closeModal(invModal);
+      });
+
+      taskForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        var question = taskName.value.replace(/\s+/g, " ").trim();
+        if (!question || taskDone === null) {
+          taskError.classList.add("is-visible");
+          return;
+        }
+        if (!/[?!.]$/.test(question)) question += "?";
+        tasks.push({ question: question, completed: taskDone });
+        saveState();
+        renderDashboard();
+        closeModal(taskModal);
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          if (invModal.classList.contains("is-open")) closeModal(invModal);
+          else if (taskModal.classList.contains("is-open")) closeModal(taskModal);
+          else if (checkScreen.classList.contains("is-active") || resultScreen.classList.contains("is-active")) {
+            showDashboard();
+          }
+        }
+        if (checkScreen.classList.contains("is-active") && !invModal.classList.contains("is-open") && !taskModal.classList.contains("is-open")) {
+          if (event.key === "y" || event.key === "Y") selectAnswer(true);
+          if (event.key === "n" || event.key === "N") selectAnswer(false);
+        }
+      });
+
+      loadState();
+      renderDashboard();
+    })();
+  </script>
+</body>
+</html>
