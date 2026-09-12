@@ -81,6 +81,10 @@
       opacity: 0.45;
     }
 
+    [hidden] {
+      display: none !important;
+    }
+
     img, svg {
       display: block;
     }
@@ -354,6 +358,10 @@
     .panel-copy {
       flex: 1;
       min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
     }
 
     .panel-title {
