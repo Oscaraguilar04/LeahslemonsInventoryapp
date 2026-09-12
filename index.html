@@ -435,6 +435,36 @@
     .row-state {
       font-size: 13px;
       color: var(--text-secondary);
+      flex: 0 0 auto;
+    }
+
+    .row-delete {
+      width: 44px;
+      height: 44px;
+      margin: 0 -8px 0 0;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      color: var(--text-tertiary);
+      flex: 0 0 auto;
+    }
+
+    .row-delete:active,
+    .row-delete:focus-visible {
+      color: var(--text-primary);
+      background: var(--surface-secondary);
+    }
+
+    .sheet-copy {
+      margin: -6px 0 20px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    .sheet-copy strong {
+      color: var(--text-primary);
+      font-weight: 600;
     }
 
     .empty {
@@ -811,6 +841,13 @@
       <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
       <path d="M3 3v5h5"></path>
     </symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 6h18"></path>
+      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+      <line x1="10" x2="10" y1="11" y2="17"></line>
+      <line x1="14" x2="14" y1="11" y2="17"></line>
+    </symbol>
   </svg>
 
   <div class="app" id="dashboard">
@@ -1003,6 +1040,22 @@
     </div>
   </div>
 
+  <div class="backdrop" id="deleteModal" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+      <div class="sheet-head">
+        <h2 id="deleteModalTitle">Delete item</h2>
+        <button type="button" class="icon-btn" id="closeDeleteModal" aria-label="Close">
+          <svg class="icon" viewBox="0 0 24 24"><use href="#i-x"></use></svg>
+        </button>
+      </div>
+      <p class="sheet-copy">Remove <strong id="deleteItemName"></strong> from inventory? This cannot be undone.</p>
+      <div class="actions-row">
+        <button type="button" class="btn btn-secondary" id="deleteCancelBtn">Cancel</button>
+        <button type="button" class="btn btn-primary" id="deleteConfirmBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     (function () {
       "use strict";
@@ -1088,6 +1141,7 @@
       var invHas = null;
       var taskDone = null;
       var lastFocus = null;
+      var pendingDeleteIndex = null;
 
       var dashboard = document.getElementById("dashboard");
       var checkScreen = document.getElementById("checkScreen");
@@ -1115,6 +1169,8 @@
       var resultBody = document.getElementById("resultBody");
       var invModal = document.getElementById("invModal");
       var taskModal = document.getElementById("taskModal");
+      var deleteModal = document.getElementById("deleteModal");
+      var deleteItemName = document.getElementById("deleteItemName");
       var invForm = document.getElementById("invForm");
       var taskForm = document.getElementById("taskForm");
       var invName = document.getElementById("invName");
@@ -1193,15 +1249,21 @@
         if (!items.length) {
           return '<div class="empty">Nothing added yet.</div>';
         }
-        return items.map(function (item) {
+        return items.map(function (item, index) {
           var ready = kind === "inventory" ? item.hasIt : item.completed;
           var label = kind === "inventory" ? item.name : item.question;
           var state = kind === "inventory" ? (ready ? "Ready" : "Missing") : (ready ? "Complete" : "Incomplete");
+          var deleteBtn = kind === "inventory"
+            ? '<button type="button" class="row-delete" data-delete-index="' + index + '" aria-label="Delete ' + escapeHtml(label) + '">' +
+                '<svg class="icon icon-sm" viewBox="0 0 24 24"><use href="#i-trash"></use></svg>' +
+              "</button>"
+            : "";
           return (
             '<div class="row">' +
               '<span class="status-dot ' + (ready ? "ready" : "missing") + '" aria-hidden="true"></span>' +
               '<span class="row-name">' + escapeHtml(label) + "</span>" +
               '<span class="row-state">' + state + "</span>" +
+              deleteBtn +
             "</div>"
           );
         }).join("");
@@ -1438,12 +1500,28 @@
       function closeModal(modal) {
         modal.classList.remove("is-open");
         modal.hidden = true;
-        if (!invModal.classList.contains("is-open") && !taskModal.classList.contains("is-open") && !checkScreen.classList.contains("is-active")) {
+        if (!invModal.classList.contains("is-open") && !taskModal.classList.contains("is-open") && !deleteModal.classList.contains("is-open") && !checkScreen.classList.contains("is-active")) {
           lockBody(false);
         }
         if (lastFocus && typeof lastFocus.focus === "function") {
           lastFocus.focus();
         }
+      }
+
+      function confirmDeleteInventory(index) {
+        if (!inventory[index]) return;
+        pendingDeleteIndex = index;
+        deleteItemName.textContent = inventory[index].name;
+        openModal(deleteModal, document.getElementById("deleteConfirmBtn"));
+      }
+
+      function deleteInventoryItem() {
+        if (pendingDeleteIndex === null || !inventory[pendingDeleteIndex]) return;
+        inventory.splice(pendingDeleteIndex, 1);
+        pendingDeleteIndex = null;
+        saveState();
+        renderDashboard();
+        closeModal(deleteModal);
       }
 
       function resetInvForm() {
@@ -1533,6 +1611,31 @@
         if (event.target === taskModal) closeModal(taskModal);
       });
 
+      invList.addEventListener("click", function (event) {
+        var button = event.target.closest("[data-delete-index]");
+        if (!button) return;
+        confirmDeleteInventory(parseInt(button.getAttribute("data-delete-index"), 10));
+      });
+
+      document.getElementById("closeDeleteModal").addEventListener("click", function () {
+        pendingDeleteIndex = null;
+        closeModal(deleteModal);
+      });
+
+      document.getElementById("deleteCancelBtn").addEventListener("click", function () {
+        pendingDeleteIndex = null;
+        closeModal(deleteModal);
+      });
+
+      document.getElementById("deleteConfirmBtn").addEventListener("click", deleteInventoryItem);
+
+      deleteModal.addEventListener("click", function (event) {
+        if (event.target === deleteModal) {
+          pendingDeleteIndex = null;
+          closeModal(deleteModal);
+        }
+      });
+
       document.addEventListener("click", function (event) {
         var button = event.target.closest("[data-field]");
         if (!button) return;
@@ -1570,11 +1673,15 @@
         if (event.key === "Escape") {
           if (invModal.classList.contains("is-open")) closeModal(invModal);
           else if (taskModal.classList.contains("is-open")) closeModal(taskModal);
+          else if (deleteModal.classList.contains("is-open")) {
+            pendingDeleteIndex = null;
+            closeModal(deleteModal);
+          }
           else if (checkScreen.classList.contains("is-active") || resultScreen.classList.contains("is-active")) {
             showDashboard();
           }
         }
-        if (checkScreen.classList.contains("is-active") && !invModal.classList.contains("is-open") && !taskModal.classList.contains("is-open")) {
+        if (checkScreen.classList.contains("is-active") && !invModal.classList.contains("is-open") && !taskModal.classList.contains("is-open") && !deleteModal.classList.contains("is-open")) {
           if (event.key === "y" || event.key === "Y") selectAnswer(true);
           if (event.key === "n" || event.key === "N") selectAnswer(false);
         }
